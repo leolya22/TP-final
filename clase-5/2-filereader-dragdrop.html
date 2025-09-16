@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drag & Drop Gallery</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    #dropArea {
+      width: 250px;
+      height: 200px;
+      border: 3px dashed #6c63ff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      color: #6c63ff;
+      font-size: 16px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    #dropArea:hover {
+      background: #f0f0ff;
+      transform: scale(1.03);
+      border-color: #4e45e6;
+      color: #4e45e6;
+    }
+
+    #gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    #gallery img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      object-fit: cover;
+    }
+
+    #gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Sube tus imágenes</h1>
+  <div id="dropArea">
+    Arrastra tus imágenes aquí
+  </div>
+  <div id="gallery"></div>
+
+  <script>
+    const dropArea = document.getElementById("dropArea");
+    const gallery = document.getElementById("gallery");
+
+    dropArea.addEventListener("dragover", (e) => {
+      e.preventDefault()
+      console.log("Dentro del div")
+    });
+
+    dropArea.addEventListener("drop", (e) => {
+      e.preventDefault()
+      for (const file of e.dataTransfer.files) {
+        console.log(file)
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = (e) => {
+          const img = document.createElement("img")
+          img.src = e.target.result
+          img.alt = "imagen de prueba"
+          gallery.appendChild(img)
+        }
+      }
+    })
+  </script>
+
+</body>
+
+</html>

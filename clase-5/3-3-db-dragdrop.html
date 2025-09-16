@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #25253a);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+
+    #dropArea {
+      width: 300px;
+      height: 200px;
+      border: 3px dashed #6a6af0;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #bbb;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    #dropArea:hover {
+      border-color: #9a9aff;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transform: scale(1.03);
+    }
+
+    #gallery {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    #gallery div {
+      background: #2e2e44;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease;
+    }
+
+    #gallery div:hover {
+      transform: translateY(-5px);
+    }
+
+    #gallery img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>📂 Drag & Drop Gallery</h1>
+  <div id="dropArea">
+    Arrastra aquí imágenes para guardar en DB
+  </div>
+  <div id="gallery"></div>
+
+  <script>
+    const dropArea = document.getElementById("dropArea")
+    const gallery = document.getElementById("gallery")
+
+    let db;
+
+    const request = indexedDB.open("db-images", 2)
+
+    request.onupgradeneeded = (e) => {
+      db = e.target.result
+      db.createObjectStore("images", { keyPath: "id" })
+    }
+
+    request.onsuccess = e => {
+      db = e.target.result
+      renderImages()
+    }
+
+    dropArea.addEventListener("dragover", (e) => {
+      e.preventDefault()
+    });
+
+    dropArea.addEventListener("drop", (e) => {
+      e.preventDefault()
+
+      for (const file of e.dataTransfer.files) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file)
+        reader.onload = (e) => {
+          const tx = db.transaction("images", "readwrite")
+          tx.objectStore("images").add({ id: crypto.randomUUID(), src: e.target.result })
+          tx.oncomplete = renderImages
+        }
+      }
+    })
+
+    const renderImages = () => {
+      gallery.innerHTML = ""
+      const tx = db.transaction("images", "readonly")
+      tx.objectStore("images").getAll().onsuccess = (e) => {
+        const dataImages = e.target.result
+
+        dataImages.forEach(({ src }) => {
+          const div = document.createElement("div");
+          const img = document.createElement("img");
+          img.src = src;
+          div.appendChild(img);
+          gallery.appendChild(div);
+        })
+      }
+    }
+  </script>
+
+</body>
+
+</html>
