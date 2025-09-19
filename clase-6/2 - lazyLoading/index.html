@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <style>
+    body {
+      height: 300vh;
+    }
+
+    img {
+      display: block;
+      margin: 50px auto;
+      width: 300px;
+      min-height: 200px;
+      background: #ddd;
+    }
+  </style>
+  <img data-src="https://placehold.co/400/FF0000/FFF" alt="imagen de prueba">
+
+  <script>
+    const imgs = document.querySelectorAll("img[data-src]")
+
+    const observer = new IntersectionObserver(entires => {
+      entires.forEach(entire => {
+        if (entire.isIntersecting) {
+          entire.target.src = entire.target.dataset.src
+          observer.unobserve(entire.target)
+        }
+      })
+    })
+
+    imgs.forEach(img => observer.observe(img))
+  </script>
+</body>
+
+</html>

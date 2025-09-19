@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+  </style>
+  <h2 id="status">Estado: esperando...</h2>
+  <button id="main">Ejecutar en el hilo principal</button>
+  <button id="worker">Ejecutar en Web Worker</button>
+  <button id="ping">Probar interacción</button>
+</body>
+
+<script>
+  const status = document.querySelector("#status")
+  const main = document.querySelector("#main")
+  const workerBtn = document.querySelector("#worker")
+  const ping = document.querySelector("#ping")
+
+  main.addEventListener("click", () => {
+    status.textContent = "Cargando resultado en mono hilo"
+    let result = 0;
+    for (let i = 0; i < 1e9; i++) result += i; // 1000000000
+    status.textContent = `Resultado en el hilo principal: ${result}`
+  })
+
+  const worker = new Worker("./worker.js")
+  worker.onmessage = (e) => {
+    status.textContent = `Resultado en worker: ${e.data}`
+  }
+
+  workerBtn.addEventListener("click", () => {
+    status.textContent = "Ejecutando el worker, página sigue en funcionamiento."
+    worker.postMessage("start")
+  })
+
+  ping.addEventListener("click", () => {
+    alert("✅ La interfaz sigue respondiendo!")
+  })
+</script>
+
+</html>
