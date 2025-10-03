@@ -19,3 +19,4 @@
 //renderizar los usuarios
 console.log("Aplicación de gestión de usuarios iniciada");
 console.log("Funcionalidades de agregar, listar y drag-and-drop de usuarios están en desarrollo.");
+console.log("¡Pronto estará disponible!");
