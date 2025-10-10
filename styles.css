@@ -82,6 +82,9 @@ form button:hover {
 
 /* --- Tarjetas de usuario --- */
 .user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background: #f2f8ff;
   border: 1px solid #cce0ff;
   border-radius: 6px;
@@ -137,4 +140,19 @@ form button:hover {
   border-color: #555;
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.btn {
+  background-color: inherit;
+  color: white;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 10px;
+}
+
+.buttons {
+  display: flex;
 }

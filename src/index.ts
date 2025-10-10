@@ -5,7 +5,6 @@ const form = document.getElementById("userForm") as HTMLFormElement;
 const nameInput = document.getElementById("name") as HTMLInputElement;
 const emailInput = document.getElementById("email") as HTMLInputElement;
 const roleSelect = document.getElementById("role") as HTMLSelectElement;
-console.log(form, nameInput, emailInput, roleSelect);
 
 
 const containers = {
@@ -13,19 +12,25 @@ const containers = {
   Editor: document.getElementById("Editor")!,
   Lector: document.getElementById("Lector")!,
 } as const;
+let editingUserId: string | null = null;
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   
-  const newUser: User = {
-    id: crypto.randomUUID(),
+  const userData: User = {
+    id: editingUserId ?? crypto.randomUUID(),
     name: nameInput.value.trim(),
     email: emailInput.value.trim(),
     role: roleSelect.value as User["role"],
   };
-  console.log(newUser);
 
-  UserService.addUser(newUser);
+  if (editingUserId) {
+    UserService.updateUser({ ...userData, id: editingUserId });
+    editingUserId = null;
+  } else {
+    UserService.addUser(userData);
+  }
+
   renderUsers();
   form.reset();
 });
@@ -46,15 +51,32 @@ function renderUsers() {
     div.addEventListener("dragstart", (e) => {
       e.dataTransfer?.setData("text/plain", user.id);
     });
+    
+    const divButtons = document.createElement("div");
+    divButtons.className = "buttons";
 
     // Botón eliminar
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "❌";
+    deleteBtn.className = "btn";
     deleteBtn.onclick = () => {
       UserService.deleteUser(user.id);
       renderUsers();
     };
-    div.appendChild(deleteBtn);
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✏️";
+    editBtn.className = "btn";
+    editBtn.onclick = () => {
+      nameInput.value = user.name;
+      emailInput.value = user.email;
+      roleSelect.value = user.role;
+      editingUserId = user.id;
+    };
+
+    divButtons.appendChild(editBtn);
+    divButtons.appendChild(deleteBtn);
+    div.appendChild(divButtons);
 
     containers[user.role as keyof typeof containers].appendChild(div);
   });
